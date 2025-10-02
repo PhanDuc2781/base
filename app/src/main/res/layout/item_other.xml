@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icon"
+        android:layout_width="53dp"
+        android:layout_height="53dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_audio_converter" />
+
+    <com.example.base_project.base.BaseTextview
+        android:id="@+id/txt_title"
+        style="@style/txt_primary"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center"
+        android:singleLine="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:padding="2dp"
+        android:gravity="center"
+        android:text="@string/audio_converter"/>
+
+
+</LinearLayout>

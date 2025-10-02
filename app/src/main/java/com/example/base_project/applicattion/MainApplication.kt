@@ -2,8 +2,8 @@ package com.example.base_project.applicattion
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatActivity
-import com.example.base_project.MainActivity
 import com.example.base_project.ext.WindowInsetModel
+import com.example.base_project.ui.main.language.LanguageModel
 import com.example.base_project.util.NetworkConnectionManager
 import com.example.base_project.util.Storage
 import com.example.base_project.util.isInternetAvailable
@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -35,28 +36,28 @@ class MainApplication : Application() {
         storage.migrate()
         registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
         NetworkConnectionManager.shared.registerForNetworkUpdates(this)
+
+        checkAndUpdateFirstOpen()
+    }
+
+    private fun checkAndUpdateFirstOpen() {
+        if (!storage.isFirstOpenApp) {
+            val deviceLg = Locale.getDefault().language
+            val index = LanguageModel.getIndex(deviceLg)
+            storage.appLanguage = index
+            LanguageModel.setCurrent(index)
+        } else {
+            val index = storage.appLanguage
+            LanguageModel.setCurrent(index)
+        }
+        storage.isFirstOpenApp = true
     }
 
     fun getActiveActivity(): AppCompatActivity? =
         activityLifecycleCallbacks.getActiveActivity() as? AppCompatActivity
-
-    suspend fun getFirebaseToken(): String? = withContext(Dispatchers.IO) {
-        return@withContext suspendCoroutine<String?> {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val token = task.result
-                    it.resume(token)
-                } else {
-                    it.resume(null)
-                }
-            }
-        }
-    }
 }
 
 fun activeActivity(): AppCompatActivity? = MainApplication.instance.getActiveActivity()
-
-suspend fun firebaseToken(): String? = MainApplication.instance.getFirebaseToken()
 
 val isInternetAvailable: Boolean
     get() = MainApplication.instance.isInternetAvailable()

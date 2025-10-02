@@ -2,7 +2,6 @@ package com.example.base_project.base
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import com.example.base_project.R
@@ -17,10 +16,10 @@ import com.example.base_project.ext.show
 
 data class AlertData(
     val title: String = MainApplication.instance.getString(R.string.error_deffault_title),
-    val msg: String,
+    val msg: String? = null,
     val posTitle: String,
     val nevTitle: String? = null,
-    val callback: ((Boolean) -> Unit)? = null
+    val callback: ((Boolean) -> Unit)? = null,
 )
 
 fun AlertData.toBundle(): Bundle {
@@ -28,7 +27,7 @@ fun AlertData.toBundle(): Bundle {
         ALERT_MSG_KEY to msg,
         ALERT_POS_TITLE_KEY to posTitle,
         ALERT_NEV_TITLE_KEY to nevTitle,
-        ALERT_TITLE_KEY to title
+        ALERT_TITLE_KEY to title,
     )
 }
 
@@ -87,10 +86,10 @@ class CustomAlertDialog :
             R.style.FullScreenDialog
         )
         return super.onCreateDialog(savedInstanceState).apply {
-            window?.setFlags(
+            /*window?.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            )
+            )*/
         }
     }
 }

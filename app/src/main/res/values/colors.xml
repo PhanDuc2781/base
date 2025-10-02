@@ -1,5 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="gradient_linear_1">#59FFEB</color>
+    <color name="gradient_linear_2">#53F226</color>
+
+    <color name="color_background">#000</color>
+    <color name="color_item_selected">#474A55</color>
+
+    <color name="color_secondary">#ADADAD</color>"
+
+    <color name="neutral_5">#2C434A</color>
+    <color name="progress_volume">#53F226</color>
+    <color name="gray_500">#9AA0A6</color>
+
+    <!--WaveForm-->
+
+    <color name="accent_material_dark">@color/material_deep_teal_200</color>
+    <color name="accent_material_light">@color/material_deep_teal_500</color>
+    <color name="androidx_core_ripple_material_light">#1f000000</color>
+    <color name="androidx_core_secondary_text_default_material_light">#8a000000</color>
+    <color name="background">#ff1e1e24</color>
+    <color name="background_floating_material_dark">@color/material_grey_800</color>
+    <color name="background_floating_material_light">@android:color/white</color>
+    <color name="background_material_dark">@color/material_grey_850</color>
+    <color name="background_material_light">@color/material_grey_50</color>
+    <color name="black_20_color">#33000000</color>
+    <color name="black_65_color">#a6000000</color>
+    <color name="black_color">#ff000000</color>
+    <color name="bright_foreground_disabled_material_dark">#80ffffff</color>
+    <color name="bright_foreground_disabled_material_light">#80000000</color>
+    <color name="bright_foreground_inverse_material_dark">@color/bright_foreground_material_light</color>
+    <color name="bright_foreground_inverse_material_light">@color/bright_foreground_material_dark</color>
+    <color name="bright_foreground_material_dark">@android:color/white</color>
+    <color name="bright_foreground_material_light">@android:color/black</color>
+    <color name="browser_actions_bg_grey">#f5f5f5</color>
+    <color name="browser_actions_divider_color">#1e000000</color>
+    <color name="browser_actions_text_color">#de000000</color>
+    <color name="browser_actions_title_color">#646464</color>
+    <color name="button_material_dark">#ff5a595b</color>
+    <color name="button_material_light">#ffd6d7d7</color>
+    <color name="colorAccent">#2ed184</color>
+    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimaryDark">#303f9f</color>
+    <color name="common_dialog_cancel_color">#ffbbbbbb</color>
+    <color name="common_dialog_divider_color">#ffd6d6d6</color>
+    <color name="common_dialog_title_color">#a6000000</color>
+    <color name="common_seek_bar_progress_color">#ff36363f</color>
+    <color name="common_seek_bar_thumb_border_color">#ffc8c8d3</color>
+    <color name="dim_foreground_disabled_material_dark">#80bebebe</color>
+    <color name="dim_foreground_disabled_material_light">#80323232</color>
+    <color name="dim_foreground_material_dark">#ffbebebe</color>
+    <color name="dim_foreground_material_light">#ff323232</color>
+    <color name="error_color_material_dark">#ff7043</color>
+    <color name="error_color_material_light">#ff5722</color>
+    <color name="foreground_material_dark">@android:color/white</color>
+    <color name="foreground_material_light">@android:color/black</color>
+    <color name="google_ad_bg_color">#ffffcc66</color>
+    <color name="google_bottom_bg_color">#60000000</color>
+    <color name="green_color">#00e0b0</color>
+    <color name="grid_line">#3cffffff</color>
+    <color name="highlighted_text_material_dark">#6680cbc4</color>
+    <color name="highlighted_text_material_light">#66009688</color>
+    <color name="material_blue_grey_800">#ff37474f</color>
+    <color name="material_blue_grey_900">#ff263238</color>
+    <color name="material_blue_grey_950">#ff21272b</color>
+    <color name="material_deep_teal_200">#ff80cbc4</color>
+    <color name="material_deep_teal_500">#ff008577</color>
+    <color name="material_grey_100">#fff5f5f5</color>
+    <color name="material_grey_300">#ffe0e0e0</color>
+    <color name="material_grey_50">#fffafafa</color>
+    <color name="material_grey_600">#ff757575</color>
+    <color name="material_grey_800">#ff424242</color>
+    <color name="material_grey_850">#ff303030</color>
+    <color name="material_grey_900">#ff212121</color>
+    <color name="more_item_bg_color">#ff35353e</color>
+    <color name="notification_action_color_filter">#ffffffff</color>
+    <color name="notification_icon_bg_color">#ff9e9e9e</color>
+    <color name="playback_indicator">#ffffbc00</color>
+    <color name="preference_fallback_accent_color">#ff008577</color>
+    <color name="primary_color">#ff1e1e24</color>
+    <color name="primary_dark_material_dark">@android:color/black</color>
+    <color name="primary_dark_material_light">@color/material_grey_600</color>
+    <color name="primary_material_dark">@color/material_grey_900</color>
+    <color name="primary_material_light">@color/material_grey_100</color>
+    <color name="primary_text_default_material_dark">#ffffffff</color>
+    <color name="primary_text_default_material_light">#de000000</color>
+    <color name="primary_text_disabled_material_dark">#4dffffff</color>
+    <color name="primary_text_disabled_material_light">#39000000</color>
+    <color name="processing_dialog_bg_color">#99000000</color>
+    <color name="purple_color">#ff5a70f2</color>
+    <color name="purple_light_color">#ff647bff</color>
+    <color name="red_color">#ff6768</color>
+    <color name="ripple_material_dark">#33ffffff</color>
+    <color name="ripple_material_light">#1f000000</color>
+    <color name="rsbColorSeekBarDefault">#c3c3c3</color>
+    <color name="rsbColorThumbBorder">#80AFAFAF</color>
+    <color name="rsbColorThumbDefault">#17A44F</color>
+    <color name="rsbColorThumbPressed">#ffe7e7e7</color>
+    <color name="secondary_text_default_material_dark">#b3ffffff</color>
+    <color name="secondary_text_default_material_light">#8a000000</color>
+    <color name="secondary_text_disabled_material_dark">#36ffffff</color>
+    <color name="secondary_text_disabled_material_light">#24000000</color>
+    <color name="sub_color">#ff292930</color>
+    <color name="switch_thumb_disabled_material_dark">#ff616161</color>
+    <color name="switch_thumb_disabled_material_light">#ffbdbdbd</color>
+    <color name="switch_thumb_normal_material_dark">#ffbdbdbd</color>
+    <color name="switch_thumb_normal_material_light">#fff1f1f1</color>
+    <color name="timecode">#3cffffff</color>
+    <color name="tooltip_background_dark">#e6616161</color>
+    <color name="tooltip_background_light">#e6ffffff</color>
+    <color name="waveform_selected">#5DBF84</color>
+    <color name="waveform_unselected">#86B79A</color>
+    <color name="waveform_unselected_bkgnd_overlay">#ff25283d</color>
+    <color name="white_12_color">#1effffff</color>
+    <color name="white_50_color">#7fffffff</color>
+    <color name="white_60_color">#99ffffff</color>
+    <color name="white_70_color">#b2ffffff</color>
+    <color name="white_80_color">#ccffffff</color>
+    <color name="white_color">#ffffffff</color>
+
+    <color name="green_maker">#22C563</color>
+    <color name="red_maker">#FF0000</color>
+    <color name="yellow_maker">#FFFC4F</color>
+
+    <color name="green">#17A44F</color>
+    <color name="cancel">#44D67E</color>
+    <color name="txt_color">#555555</color>
+    <color name="dialog_color">#F7FFF6</color>
+    <color name="menu_color">#E0E0E0</color>
+    <color name="txt_color_item">#868686</color>
+    <color name="bg_app">#F5F5F5</color>
+    <color name="bg_surf">#F5F5F5</color>
+    <color name="text_dialog">#AFAFAF</color>
+    <color name="content_dialog">#939191</color>
+    <color name="rateColor">#0066FF</color>
+    <color name="choose_audio">#D9D9D9</color>
+    <color name="e_color">#EEEEEE</color>
+    <color name="txt_policy">#004DC1</color>
+
+    <color name="trans">#00000000</color>
+    <color name="wave">#AFAFAF</color>
+    <color name="bg_dialog_show">#4D000000</color>
+    
+    <!--Wave Form-->
+    <color name="waveform_bg">#575151</color>
+    <color name="waveform_scroll">#432A2A</color>
+    <color name="waveform_selected_2">#1C4D73</color>
+    <color name="waveform_selected_3">#235F71</color>
+    <color name="waveform_selected_rect">#52F424</color>
+    <color name="waveform_selected_rect_2">#52F424</color>
+    <color name="waveform_selected_rect_3">#52F424</color>
+    <color name="selection_border">#03A9F4</color>
+    <color name="selection_border_2">#4CAF50</color>
+    <color name="selection_border_3">#00BCD4</color>
+    <color name="timecode_shadow">#00BCD4</color>
+
+    <color name="colorGrayAlpha">#80000000</color>
+    <color name="colorBlue">#0e1f2f</color>
+    <color name="colorTextGray">#ADADAD</color>
+    <color name="colorBg">#3be3e3</color>
+    <color name="colorBlack">#000</color>
+    <color name="colorGridLine">#00ed1b24</color>
+    <color name="colorSelectionBorder">#9c41bc</color>
+    <color name="colorWaveformBg">#253571</color>
+    <color name="colorPlaybackIndicator">#b2253571</color>
+    <color name="colorTimeCode">#dd253571</color>
+    <color name="colorTimeCodeShadow">#aa253571</color>
+    <color name="waveformSelected">#adb5cc</color>
+    <color name="waveformUnselected">#adb5cc</color>
+    <color name="waveformUnselectedBackground">#e8e6e7</color>
+    <color name="orange_color">#52F424</color>
+
+    <color name="editor_playpause_background">#FFFFFF</color>
+    <color name="editor_save_text_color">#FFFFFF</color>
+    <color name="editor_save_button_color">#007aff</color>
+    <color name="editor_waveform_bg_color">#800D111A</color>
+    <color name="editor_grind_paint_color">#8dffffff</color>
+    <color name="editor_border_line_paint_color">#FFFFFF</color>
+    <color name="editor_play_back_line_paint_color">#FFEB3B</color>
+    <color name="editor_selected_rectangle_color">#00AFADAD</color>
+    <color name="editor_mUnselectedline_color">#FFFFFF</color>
+    <color name="editor_selected_line_paint_color">#FFFFFF</color>
+    <color name="editor_playpause_arrow_color">#0d1220</color>
+    <color name="tab_color">#2F313C</color>
+
+    <color name="color_track">#96BC8B</color>
+
+    <color name="gray_200">#42444A</color>
 </resources>

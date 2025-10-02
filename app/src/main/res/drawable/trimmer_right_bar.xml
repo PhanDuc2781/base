@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:aapt="http://schemas.android.com/aapt"
+            android:width="34dp"
+            android:height="86dp"
+            android:viewportWidth="34"
+            android:viewportHeight="86">
+            <path
+                android:pathData="M6,0L28,0A6,6 0,0 1,34 6L34,80A6,6 0,0 1,28 86L6,86A6,1 0,0 1,0 80L0,6A6,1 0,0 1,6 0z">
+                <aapt:attr name="android:fillColor">
+                    <gradient
+                        android:startX="0"
+                        android:startY="0"
+                        android:endX="41.961"
+                        android:endY="81.922"
+                        android:type="linear">
+                        <item android:offset="0" android:color="#FFFF6610"/>
+                        <item android:offset="1" android:color="#FFF2960C"/>
+                    </gradient>
+                </aapt:attr>
+            </path>
+        </vector>
+
+    </item>
+
+    <item android:gravity="center">
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="12dp"
+            android:height="20dp"
+            android:viewportWidth="12"
+            android:viewportHeight="20">
+            <path
+                android:pathData="M1.15,19.1C0.9,18.85 0.775,18.554 0.775,18.212C0.775,17.87 0.9,17.574 1.15,17.325L8.475,10L1.125,2.65C0.892,2.417 0.775,2.125 0.775,1.775C0.775,1.425 0.9,1.125 1.15,0.875C1.4,0.625 1.696,0.5 2.038,0.5C2.38,0.5 2.676,0.625 2.925,0.875L11.325,9.3C11.425,9.4 11.496,9.508 11.538,9.625C11.58,9.742 11.601,9.867 11.6,10C11.6,10.133 11.579,10.258 11.537,10.375C11.495,10.492 11.424,10.6 11.325,10.7L2.9,19.125C2.667,19.358 2.379,19.475 2.037,19.475C1.695,19.475 1.399,19.35 1.15,19.1Z"
+                android:fillColor="#ffffff"/>
+        </vector>
+
+    </item>
+
+</layer-list>

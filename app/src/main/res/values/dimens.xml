@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="compat_button_inset_horizontal_material">4dp</dimen>
+    <dimen name="compat_button_inset_vertical_material">6dp</dimen>
+    <dimen name="compat_button_padding_horizontal_material">8dp</dimen>
+    <dimen name="compat_button_padding_vertical_material">4dp</dimen>
+    <dimen name="compat_control_corner_material">2dp</dimen>
+    <dimen name="compat_notification_large_icon_max_height">320dp</dimen>
+    <dimen name="compat_notification_large_icon_max_width">320dp</dimen>
+    <dimen name="disabled_alpha_material_dark">0.3</dimen>
+    <dimen name="disabled_alpha_material_light">0.26</dimen>
+    <dimen name="fastscroll_default_thickness">8dp</dimen>
+    <dimen name="fastscroll_margin">0dp</dimen>
+    <dimen name="fastscroll_minimum_range">50dp</dimen>
+    <dimen name="highlight_alpha_material_colored">0.26</dimen>
+    <dimen name="highlight_alpha_material_dark">0.2</dimen>
+    <dimen name="highlight_alpha_material_light">0.12</dimen>
+    <dimen name="hint_alpha_material_dark">0.5</dimen>
+    <dimen name="hint_alpha_material_light">0.38</dimen>
+    <dimen name="hint_pressed_alpha_material_dark">0.7</dimen>
+    <dimen name="hint_pressed_alpha_material_light">0.54</dimen>
+    <dimen name="item_touch_helper_max_drag_scroll_per_frame">20dp</dimen>
+    <dimen name="item_touch_helper_swipe_escape_max_velocity">800dp</dimen>
+    <dimen name="item_touch_helper_swipe_escape_velocity">120dp</dimen>
+    <dimen name="notification_action_icon_size">32dp</dimen>
+    <dimen name="notification_action_text_size">13sp</dimen>
+    <dimen name="notification_big_circle_margin">12dp</dimen>
+    <dimen name="notification_content_margin_start">8dp</dimen>
+    <dimen name="notification_large_icon_height">64dp</dimen>
+    <dimen name="notification_large_icon_width">64dp</dimen>
+    <dimen name="notification_main_column_padding_top">10dp</dimen>
+    <dimen name="notification_media_narrow_margin">@dimen/notification_content_margin_start</dimen>
+    <dimen name="notification_right_icon_size">16dp</dimen>
+    <dimen name="notification_right_side_padding_top">4dp</dimen>
+    <dimen name="notification_small_icon_background_padding">3dp</dimen>
+    <dimen name="notification_small_icon_size_as_large">24dp</dimen>
+    <dimen name="notification_subtext_size">13sp</dimen>
+    <dimen name="notification_top_pad">10dp</dimen>
+    <dimen name="notification_top_pad_large_text">5dp</dimen>
+    <dimen name="preference_dropdown_padding_start">0dp</dimen>
+    <dimen name="preference_icon_minWidth">0dp</dimen>
+    <dimen name="preference_seekbar_padding_horizontal">0dp</dimen>
+    <dimen name="preference_seekbar_padding_vertical">15dp</dimen>
+    <dimen name="preference_seekbar_value_minWidth">36dp</dimen>
+    <dimen name="tooltip_corner_radius">2dp</dimen>
+    <dimen name="tooltip_horizontal_padding">16dp</dimen>
+    <dimen name="tooltip_margin">8dp</dimen>
+    <dimen name="tooltip_precise_anchor_extra_offset">8dp</dimen>
+    <dimen name="tooltip_precise_anchor_threshold">96dp</dimen>
+    <dimen name="tooltip_vertical_padding">6.5dp</dimen>
+    <dimen name="tooltip_y_offset_non_touch">0dp</dimen>
+    <dimen name="tooltip_y_offset_touch">16dp</dimen>
+
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="normal_icon_size">50dp</dimen>
+    <dimen name="Editor_StartText_width">80dp</dimen>
+    <dimen name="Editor_StartText_TextSize">20sp</dimen>
+    <dimen name="Editor_End_Marker_textsize">14sp</dimen>
+    <dimen name="Editor_End_Marker_Numbers_Textsize">20sp</dimen>
+    <dimen name="Editor_Waveform_Marginleft">12dp</dimen>
+    <dimen name="Editor_Waveform_MarginRight">12dp</dimen>
+    <dimen name="Editor_Waveform_MarginBottom">20dp</dimen>
+    <dimen name="editor_textview_shape_width">80dp</dimen>
+    <dimen name="_4sdp">4dp</dimen>
+    <dimen name="_60sdp">60dp</dimen>
+    <dimen name="_8sdp">8dp</dimen>
+    <dimen name="_16sdp">16dp</dimen>
+    <dimen name="_40sdp">40dp</dimen>
+    <dimen name="_25sdp">25dp</dimen>
+    <dimen name="_13ssp">13sp</dimen>
+
+    <dimen name="dialpad_button_size">60dp</dimen>
+    <dimen name="dialpad_button_size_small">50dp</dimen>
+    <dimen name="incoming_call_arrow_size">50dp</dimen>
+    <dimen name="incoming_call_button_size">100dp</dimen>
+    <dimen name="call_notification_button_size">55dp</dimen>
+    <dimen name="incoming_call_avatar_size">120dp</dimen>
+
+    <dimen name="caller_name_text_size">34sp</dimen>
+    <dimen name="call_status_text_size">20sp</dimen>
+
+    <!-- keep these 2 values in dp to avoid scaling -->
+    <dimen name="dialpad_text_size">28dp</dimen>
+    <dimen name="dialpad_letters_text_size">12dp</dimen>
+    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="medium_margin">8dp</dimen>
+    <dimen name="normal_margin">12dp</dimen>
+    <dimen name="bigger_text_size">16sp</dimen>
+</resources>

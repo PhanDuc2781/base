@@ -1,15 +1,21 @@
 package com.example.base_project.base
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.RelativeLayout
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Group
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -19,11 +25,15 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import androidx.viewbinding.ViewBinding
+import com.bumptech.glide.Glide
 import com.example.base_project.R
+import com.example.base_project.databinding.LoadingSaveViewBinding
 import com.example.base_project.databinding.ProgresstViewBinding
 import com.example.base_project.ext.WindowInsetModel
 import com.example.base_project.ext.gone
 import com.example.base_project.ext.show
+import com.example.base_project.ui.main.language.LanguageModel
+import com.example.base_project.ui.main.language.MyContextWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -45,8 +55,19 @@ abstract class BaseActivity<B : ViewBinding>(private val inflate: Inflate<B>) :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                insets
+            }
+        }
+
         setupView(savedInstanceState)
+        clickListener()
         hideNavigationBar()
+        setStatusBarColor(R.color.black_color)
+
     }
 
     open val tabBar: TabBarView? = null
@@ -83,6 +104,10 @@ abstract class BaseActivity<B : ViewBinding>(private val inflate: Inflate<B>) :
         (binding.root as? ViewGroup)?.showProgress(isShow, layoutInflater)
     }
 
+    fun showLoading(isShow: Boolean) {
+        (binding.root as? ViewGroup)?.showDownloading(isShow, layoutInflater)
+    }
+
     open fun setupInset(insets: WindowInsetModel) {}
 
     open fun reloadWhenLogin() {}
@@ -97,11 +122,17 @@ abstract class BaseActivity<B : ViewBinding>(private val inflate: Inflate<B>) :
         if (isShow) tabBar?.show() else tabBar?.gone()
     }
 
+    open fun clickListener() {}
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus){
+        if (hasFocus) {
             hideNavigationBar()
         }
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(MyContextWrapper.wrap(newBase, LanguageModel.current.localizeCode))
     }
 }
 
@@ -121,14 +152,14 @@ abstract class BaseVMActivity<B : ViewBinding, VM : BaseViewModel>(inflate: (Lay
 fun AppCompatActivity.launch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ): Job = lifecycleScope.launch(context, start, block)
 
 @MainThread
 fun BaseActivity<*>.pushTo(
     @IdRes resId: Int,
     args: Bundle? = null,
-    isAddNew: Boolean = false
+    isAddNew: Boolean = false,
 ) {
 
     val currentDes = navContainer?.currentDestination
@@ -195,13 +226,35 @@ fun BaseActivity<*>.resetNav() {
 @Synchronized
 @MainThread
 fun AppCompatActivity.showCustomAlertDialog(
-    alertData: AlertData
+    alertData: AlertData,
 ) {
     this.lifecycleScope.launch(Dispatchers.Main) {
         CustomAlertDialog.show(
             supportFragmentManager,
             alertData
         )
+    }
+}
+
+
+@MainThread
+@Synchronized
+fun ViewGroup.showDownloading(isShow: Boolean, layoutInflater: LayoutInflater) {
+    if (isShow) {
+        if (this.findViewById<RelativeLayout>(R.id.loading_view) != null) return
+        val loading = LoadingSaveViewBinding.inflate(layoutInflater)
+        Glide.with(this.context).load(R.raw.anim_download).into(loading.loading)
+        addView(
+            loading.root,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+    } else {
+        this.findViewById<RelativeLayout>(R.id.loading_view)?.let {
+            this.removeView(it)
+        }
     }
 }
 
@@ -239,6 +292,10 @@ fun AppCompatActivity.hideNavigationBar() {
     controllerCompat.systemBarsBehavior =
         WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     controllerCompat.isAppearanceLightStatusBars = true
+}
+
+fun AppCompatActivity.setStatusBarColor(color: Int) {
+    window.statusBarColor = ContextCompat.getColor(this, color)
 }
 
 

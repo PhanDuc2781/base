@@ -19,7 +19,8 @@ interface AdapterEquatable : Equatable {
 }
 
 abstract class BaseAdapter<T : AdapterEquatable?> :
-    ListAdapter<T, BaseViewHolder<*>>(object : DiffUtil.ItemCallback<T>() {
+    ListAdapter<T, BaseViewHolder<*>>(object :
+        DiffUtil.ItemCallback<T>() {
         override fun areItemsTheSame(oldItem: T & Any, newItem: T & Any): Boolean {
             return oldItem == newItem
         }
@@ -29,11 +30,11 @@ abstract class BaseAdapter<T : AdapterEquatable?> :
         }
     }) {
 
-    fun showLoading() {
+    /*fun showLoading() {
         val current = currentList.toMutableList()
         current.add(null)
         submitList(current)
-    }
+    }*/
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         currentList.getOrNull(position)?.let {
@@ -48,14 +49,15 @@ abstract class BaseAdapter<T : AdapterEquatable?> :
         return currentList.getOrNull(position)?.getViewType() ?: -1
     }
 
-    fun <V : Any> getData(holder: BaseViewHolder<*>, type: Class<V>): V? {
-        return currentList.getOrNull(holder.adapterPosition)?.let {
+    /*fun <V : Any> getData(holder: BaseViewHolder<*>, type: Class<V>): V? {
+        return currentList.getOrNull(holder.absoluteAdapterPosition)?.let {
             type.cast(it)
         }
-    }
+    }*/
 
     abstract fun createViewHolder(parent: ViewGroup, valueBase: T): BaseViewHolder<*>
     abstract fun onBindViewHolder(holder: BaseViewHolder<*>, data: T, position: Int)
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         val value = currentList.find { viewType == it?.getViewType() }
@@ -74,6 +76,7 @@ abstract class BaseSingleAdapter<E : AdapterEquatable, B : ViewBinding>(val infl
     abstract fun createViewHolder(binding: B): BaseViewHolder<B>
     abstract fun bindingViewHolder(holder: BaseViewHolder<B>, position: Int)
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: BaseViewHolder<*>, data: E, position: Int) {
         (holder as? BaseViewHolder<B>)?.apply {
             bindingViewHolder(this, position)

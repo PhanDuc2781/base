@@ -19,7 +19,7 @@ annotation class StorageEncodable
 @Singleton
 class Storage @Inject constructor(
     @ApplicationContext val context: Context,
-    val gson: Gson
+    val gson: Gson,
 ) {
     companion object {
         const val VERSION = 1
@@ -32,6 +32,10 @@ class Storage @Inject constructor(
     var version by sharedPref(gson, prefs, 0)
     var userInfo: UserRouteInfo? by optionalSharedPref(gson, prefs)
     var accessToken by sharedPref(gson, prefs, "")
+    var first_process_finish by sharedPref(gson, prefs, false)
+    var isFirstOpenApp by sharedPref(gson, prefs, false)
+    var appLanguage by sharedPref(gson, prefs, 0)
+    var passLanguage by sharedPref(gson, prefs, false)
 
     fun logout() {
         accessToken = ""
@@ -45,7 +49,7 @@ class Storage @Inject constructor(
 }
 
 inline fun <reified T> sharedPref(
-    gson: Gson, prefs: SharedPreferences, defaultValue: T = defaultForType()
+    gson: Gson, prefs: SharedPreferences, defaultValue: T = defaultForType(),
 ) = object : ReadWriteProperty<Any, T> {
     override fun getValue(thisRef: Any, property: KProperty<*>) =
         prefs[gson, getKey(thisRef, property), defaultValue] ?: defaultValue
@@ -59,7 +63,7 @@ inline fun <reified T> sharedPref(
 }
 
 inline fun <reified T> optionalSharedPref(
-    gson: Gson, prefs: SharedPreferences, defaultValue: T? = null
+    gson: Gson, prefs: SharedPreferences, defaultValue: T? = null,
 ) = object : ReadWriteProperty<Any, T?> {
     override fun getValue(thisRef: Any, property: KProperty<*>) =
         prefs[gson, getKey(thisRef, property), defaultValue]
@@ -84,7 +88,7 @@ inline fun <reified T> defaultForType(): T = when (T::class) {
 inline operator fun <reified T> SharedPreferences.get(
     gson: Gson,
     key: String,
-    defaultValue: T?
+    defaultValue: T?,
 ): T? {
     return when (T::class) {
         Boolean::class -> this.getBoolean(key, defaultValue as? Boolean ?: false) as T
@@ -92,13 +96,24 @@ inline operator fun <reified T> SharedPreferences.get(
         Double::class -> java.lang.Double.longBitsToDouble(
             this.getLong(key, java.lang.Double.doubleToLongBits(defaultValue as? Double ?: 0.0))
         ) as T
+
         Int::class -> this.getInt(key, defaultValue as? Int ?: 0) as T
         Long::class -> this.getLong(key, defaultValue as? Long ?: 0L) as T
         String::class -> this.getString(key, defaultValue as? String ?: "") as T
         else -> {
             when {
-                defaultValue is Set<*> -> this.getStringSet(key, defaultValue as? Set<String> ?: emptySet()) as T
-                T::class.isEncodable() -> getString(key, null)?.let { gson.fromJson(it, T::class.java) }
+                defaultValue is Set<*> -> this.getStringSet(
+                    key,
+                    defaultValue as? Set<String> ?: emptySet()
+                ) as T
+
+                T::class.isEncodable() -> getString(key, null)?.let {
+                    gson.fromJson(
+                        it,
+                        T::class.java
+                    )
+                }
+
                 else -> defaultValue
             }
         }
