@@ -398,7 +398,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:max="100"
                 android:progressDrawable="@drawable/cutom_seekbar_volume"
                 android:thumb="@drawable/ic_progress_volume"
                 app:layout_constraintEnd_toEndOf="parent"

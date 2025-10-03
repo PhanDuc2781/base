@@ -20,6 +20,7 @@ class TrimViewmodel @Inject constructor(
     val selectedEnd = MutableStateFlow(-1)
     val selectedDuration = MutableStateFlow(-1)
 
+    val isPlayTrim = MutableStateFlow(false)
     val isPlay1 = MutableStateFlow(false)
     val isPlay2 = MutableStateFlow(false)
 

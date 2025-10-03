@@ -126,7 +126,7 @@ public class WaveformView extends View {
         mSelectedRectangle = new Paint();
         mSelectedRectangle.setAntiAlias(false);
         mSelectedRectangle.setStyle(Paint.Style.FILL_AND_STROKE);
-        mSelectedRectangle.setColor(getResources().getColor(R.color.editor_selected_rectangle_color));
+        mSelectedRectangle.setColor(getResources().getColor(R.color.editor_selected_rectangle_color , null));
 
         mGridPaint = new Paint();
         mGridPaint.setAntiAlias(true);
@@ -150,26 +150,26 @@ public class WaveformView extends View {
 
         mUnselectedBkgndLinePaint = new Paint();
         mUnselectedBkgndLinePaint.setAntiAlias(false);
-        mUnselectedBkgndLinePaint.setColor(getResources().getColor(R.color.editor_waveform_bg_color));
+        mUnselectedBkgndLinePaint.setColor(getResources().getColor(R.color.editor_waveform_bg_color , null));
 
         mBorderLinePaint = new Paint();
         mBorderLinePaint.setAntiAlias(true);
         mBorderLinePaint.setStrokeWidth(pxtodp(2));
         //    mBorderLinePaint.setPathEffect(new DashPathEffect(new float[]{3.0f, 2.0f}, 0.0f));
-        mBorderLinePaint.setColor(getResources().getColor(R.color.editor_border_line_paint_color));
+        mBorderLinePaint.setColor(getResources().getColor(R.color.editor_border_line_paint_color , null));
 
 
         //playbackline
         mPlaybackLinePaint = new Paint();
         mPlaybackLinePaint.setAntiAlias(true);
-        mPlaybackLinePaint.setStrokeWidth(pxtodp(1));
-        mPlaybackLinePaint.setColor(getResources().getColor(R.color.editor_play_back_line_paint_color));
+        mPlaybackLinePaint.setStrokeWidth(pxtodp(2));
+        mPlaybackLinePaint.setColor(getResources().getColor(R.color.editor_play_back_line_paint_color, null));
 
         //time;ome
         mTimecodePaint = new Paint();
         mTimecodePaint.setTextSize(pxtodp(2));
         mTimecodePaint.setAntiAlias(true);
-        mTimecodePaint.setColor(getResources().getColor(R.color.editor_border_line_paint_color));
+        mTimecodePaint.setColor(getResources().getColor(R.color.editor_border_line_paint_color , null));
 
         //   mTimecodePaint.setShadowLayer(2, 1, 1, getResources().getColor(R.color.white));
 
@@ -595,7 +595,7 @@ public class WaveformView extends View {
 
                 String timecodeStr;
                 if (minutes == 0) {
-                    timecodeStr = String.format("%02ds", seconds);
+                    timecodeStr = String.format("%2ds", seconds);
                 } else {
                     timecodeStr = String.format("%d.%02dm", minutes, seconds);
                 }

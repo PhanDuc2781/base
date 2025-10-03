@@ -22,9 +22,9 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import coil.util.Logger
 import com.example.base_project.R
 import com.example.base_project.base.BaseVMActivity
 import com.example.base_project.base.setOnSingleClickListener
@@ -51,13 +51,19 @@ import com.example.base_project.wave_form.soundeditor.widget.MarkerView
 import com.example.base_project.wave_form.soundeditor.widget.WaveformView
 import com.nekosoft.calltheme.ui.activity.ringtone_maker.soundeditor.utils.MediaStoreHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.*
+import kotlin.math.min
+import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
 class ActivityEditorAudio :
@@ -173,8 +179,14 @@ class ActivityEditorAudio :
     private var audio: Audio? = null
     override val viewModel: TrimViewmodel by viewModels()
 
-    private var rangeTrimDurationSelected = -1.0f
+    private var rangeTrimDurationSelected = 0
     private var job: Job? = null
+
+    private var currentSeconds = 0
+
+    private var totalProgress1 = 0
+
+    private var totalProgress2 = 0
 
 
     @OptIn(FlowPreview::class)
@@ -215,7 +227,7 @@ class ActivityEditorAudio :
             binding.baseTextview.text = it.title
             binding.timeEnd.text = it.duration.formatSecondsToTime()
             audioDuration = it.duration.durationToSecond()
-            Log.d("AUDIO_DURATION", "$audioDuration")
+            Log.d("AUDIO_DURATION", "${it.duration}")
         }
 
         mFilename = audio?.path
@@ -249,7 +261,8 @@ class ActivityEditorAudio :
                     }
 
                     val duration = convertWaveSelected(it.first, it.second)
-                    rangeTrimDurationSelected = duration
+                    rangeTrimDurationSelected = (duration * 1000).toInt()
+                    binding.progressCircular.max = (duration * 1000).toInt()
                     val formatSelected = formatDuration(duration.toInt())
 
                     Log.d("DURATION_SELECTED", "$duration")
@@ -263,19 +276,60 @@ class ActivityEditorAudio :
                     if (type == Type.SPLIT) {
                         binding.layoutPart.txtSelectedPart1.text = formatDuration(duration.toInt())
                         binding.previewSplit.txtEnd1.text = formatDuration(duration.toInt())
+                        binding.previewSplit.progressCircular.max = (duration * 1000).toInt()
+                        totalProgress1 = (duration * 1000).toInt()
+
 
                         val durationRemaining = audioDuration - duration
+                        totalProgress2 = (durationRemaining * 1000).toInt()
+                        binding.previewSplit.progressCircular2.max = (duration * 1000).toInt()
                         Log.d("DURATION_REMAINING", "$durationRemaining")
                         binding.layoutPart.txtSelectedPart2.text =
                             formatDuration(durationRemaining.toInt())
                         binding.previewSplit.txtEnd2.text =
                             formatDuration(durationRemaining.toInt())
+
                     }
                 }
             }
         }
 
         previewAudio()
+    }
+
+    fun startSeekBarProgress(totalDuration: Int, seekBar: SeekBar, timeStartTxt: TextView) {
+        val startTime = System.currentTimeMillis()
+        var lastSecondMark = 0
+        job = CoroutineScope(Dispatchers.Main).launch {
+            while (isActive) {
+                val elapsed = System.currentTimeMillis() - startTime
+                seekBar.progress = min(elapsed.toInt(), totalDuration)
+
+                val elapsedSeconds = elapsed
+                if (elapsedSeconds > lastSecondMark) {
+                    lastSecondMark = elapsedSeconds.toInt()
+                    currentSeconds = elapsedSeconds.toInt()
+
+                    timeStartTxt.text = currentSeconds.formatSecondsToTime()
+                }
+
+                if (elapsed >= totalDuration) {
+                    if (viewModel.isPlay1.value) {
+                        viewModel.isPlay1.value = false
+                    }
+
+                    if (viewModel.isPlay2.value) {
+                        viewModel.isPlay2.value = false
+                    }
+                    break
+                }
+                delay(16)
+            }
+        }
+    }
+
+    private fun stopSeekbarProgress() {
+        job?.cancel()
     }
 
     private fun downLoadType(type: Type) {
@@ -357,17 +411,6 @@ class ActivityEditorAudio :
         }
     }
 
-    private fun progressCiculator(duration: Float) {
-        binding.progressCircular.max = duration.toInt()
-        job?.cancel()
-        job = lifecycleScope.launch {
-            for (i in 0..duration.toInt()) {
-                binding.progressCircular.progress = i
-                delay(1000)
-            }
-        }
-    }
-
     private fun previewAudio() {
         binding.previewSplit.icPlay1.setOnClickListener {
             viewModel.isPlay1.value = !viewModel.isPlay1.value
@@ -377,15 +420,47 @@ class ActivityEditorAudio :
             viewModel.isPlay2.value = !viewModel.isPlay2.value
         }
 
+        binding.icPlay.setOnClickListener {
+            viewModel.isPlayTrim.value = !viewModel.isPlayTrim.value
+        }
+
         lifecycleScope.launch {
-            viewModel.isPlay1.collect {
+            viewModel.isPlayTrim.collect {
                 if (it) {
-                    viewModel.isPlay2.value = false
                     onPlay(mStartPos)
+                    Log.d("RANGE_TRIM", "$rangeTrimDurationSelected")
+                    startSeekBarProgress(
+                        rangeTrimDurationSelected,
+                        binding.progressCircular,
+                        binding.timeStart
+                    )
                 } else {
                     if (mIsPlaying) {
                         pausePlayer()
                     }
+                    stopSeekbarProgress()
+                }
+
+                binding.icPlay.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.isPlay1.collect {
+                if (it) {
+                    viewModel.isPlay2.value = false
+                    startSeekBarProgress(
+                        totalProgress1,
+                        binding.previewSplit.progressCircular,
+                        binding.previewSplit.txtStart1
+                    )
+                    onPlay(mStartPos)
+                    binding.previewSplit.progressCircular2.progress = 0
+                } else {
+                    if (mIsPlaying) {
+                        pausePlayer()
+                    }
+                    stopSeekbarProgress()
                 }
                 binding.previewSplit.icPlay1.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
             }
@@ -396,11 +471,19 @@ class ActivityEditorAudio :
                 if (it) {
                     viewModel.isPlay1.value = false
                     onPlay(mEndPos)
+                    startSeekBarProgress(
+                        totalProgress1,
+                        binding.previewSplit.progressCircular2,
+                        binding.previewSplit.txtStart2
+                    )
                     Log.d("END_POS", "$mMaxPos - $mStartPos - $mEndPos")
+                    binding.previewSplit.progressCircular.progress = 0
                 } else {
                     if (mIsPlaying) {
                         pausePlayer()
+                        binding.previewSplit.progressCircular2.progress = 0
                     }
+                    stopSeekbarProgress()
                 }
                 binding.previewSplit.icPlay2.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
             }
@@ -669,6 +752,18 @@ class ActivityEditorAudio :
 
     override fun markerTouchEnd(marker: MarkerView) {
         mTouchDragging = false
+        if (mIsPlaying && type == Type.SPLIT) {
+            binding.waveform.setPlayback(-1)
+            mIsPlaying = false
+            pausePlayer()
+            if (viewModel.isPlay1.value) {
+                viewModel.isPlay1.value = false
+            }
+
+            if (viewModel.isPlay2.value) {
+                viewModel.isPlay2.value = false
+            }
+        }
         if (marker == mStartMarker) {
             setOffsetGoalStart()
         } else {
@@ -1057,25 +1152,10 @@ class ActivityEditorAudio :
     private fun enableDisableButtons() {
         runOnUiThread {
             if (mIsPlaying) {
-                binding.icPlay.setImageResource(R.drawable.ic_pause)
-                binding.baseTextview4.show()
-                binding.endmarker.isClickable = false
-                binding.startmarker.isClickable = false
-                binding.waveform.isClickable = false
+//                binding.icPlay.setImageResource(R.drawable.ic_pause)
+//                binding.baseTextview4.show()
             } else {
-                binding.icPlay.setImageResource(R.drawable.ic_play)
-                binding.baseTextview4.hide()
-
-                binding.endmarker.isClickable = true
-                binding.startmarker.isClickable = true
-                binding.waveform.isClickable = true
-                /* if (viewModel.isPlay2.value){
-                     viewModel.isPlay2.value = false
-                 }*/
-
-//                if (viewModel.isPlay1.value){
-//                    viewModel.isPlay1.value = false
-//                }
+                viewModel.isPlayTrim.value = false
             }
         }
     }
@@ -1224,8 +1304,6 @@ class ActivityEditorAudio :
 
             }
 
-            binding.progressCircular.max = mPlayer!!.duration
-
             mPlayer!!.setOnCompletionListener { handlePause() }
             mIsPlaying = true
             if (mPlayStartOffset == 0) {
@@ -1315,10 +1393,6 @@ class ActivityEditorAudio :
         when {
             view === binding.zoomIn -> waveformZoomIn()
             view === binding.zoomOut -> waveformZoomOut()
-            view === binding.icPlay -> {
-                onPlay(mStartPos)
-                progressCiculator(rangeTrimDurationSelected)
-            }
 
             view == binding.markStart -> if (mIsPlaying) {
                 mStartPos =
