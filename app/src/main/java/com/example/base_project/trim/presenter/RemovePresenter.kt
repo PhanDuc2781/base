@@ -21,16 +21,15 @@ class RemovePresenter @Inject constructor() {
         fileName: String,
         endTime: Float,
         startTime: Float,
-        totalTime: Float,
         onError: (String) -> Unit = {},
         onSuccess: () -> Unit = {},
         onStart: () -> Unit = {},
         onProgress: (Int) -> Unit = {},
     ) = withContext(Dispatchers.Default) {
         if (startTime > 0.0f || endTime < audio.duration) {
-            val f = startTime / 1000.0f
+            val f = startTime
             if (f > 0.0f) {
-                val f2 = endTime / 1000.0f
+                val f2 = endTime
                 if (f2 > 0.0f) {
                     val saveFileDir = AudioPath.getSaveDirBy(SelectConstants.FROM_REMOVE_PART)
                     val file = File(saveFileDir, "Reserve")
@@ -57,34 +56,7 @@ class RemovePresenter @Inject constructor() {
 
                     val savePath =
                         absolutePath2 + File.separator + fileName + CommonConstants.UNDERLINE + AudioPath.getSaveDate() + CommonConstants.DOT + audio.extension.lowercase()
-                    if (startTime == 0.0f && endTime < audio.duration) {
-                        val duration = (audio.duration / 1000) - f2
-                        val command = TrimCommand(
-                            f2,
-                            duration,
-                            audio.path,
-                            savePath
-                        )
-
-                        command.setListener(object : BaseCommand.Listener {
-                            override fun onFailure(str: String?) {
-                                str?.let { onError.invoke(it) }
-                            }
-
-                            override fun onProgress(progress: Int) {
-                                onProgress.invoke(progress)
-                            }
-
-                            override fun onStart() {
-                                onStart.invoke()
-                            }
-
-                            override fun onSuccess() {
-                                onSuccess.invoke()
-                            }
-                        })
-                        command.execute()
-                    } else if (startTime > 0.0f && endTime < audio.duration) {
+                    if (endTime < audio.duration) {
                         val removeCommand = RemoveCommand(
                             f,
                             f2,

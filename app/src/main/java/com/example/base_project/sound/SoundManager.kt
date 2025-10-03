@@ -18,7 +18,7 @@ class SoundManager @Inject constructor(@ApplicationContext val context: Context)
         mediaPlayer?.setVolume(vol, vol)
     }
 
-    fun playSound(audioModel: Audio, volume: Float = 1f , speed: Float = 1f) {
+    fun playSound(audioModel: Audio, volume: Float = 1f , speed: Float = 1f , onCompletion: () -> Unit = {}) {
         try {
             if (mediaPlayer == null) {
                 mediaPlayer = MediaPlayer()
@@ -48,7 +48,7 @@ class SoundManager @Inject constructor(@ApplicationContext val context: Context)
                         mp.start()
                     }
                     setOnCompletionListener {
-
+                        onCompletion.invoke()
                     }
                     setOnPreparedListener {
                         it.playbackParams = it.playbackParams.setSpeed(speed)

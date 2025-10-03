@@ -405,6 +405,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/baseTextview4"
                 tools:ignore="MissingConstraints" />
 
+            <SeekBar
+                android:id="@+id/progress_remove"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:visibility="gone"
+                android:progressDrawable="@drawable/cutom_seekbar_remove"
+                android:thumb="@drawable/ic_progress_remove"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/baseTextview4"
+                tools:ignore="MissingConstraints" />
+
             <com.example.base_project.base.BaseTextview
                 android:id="@+id/time_start"
                 style="@style/txt_primary"

@@ -48,7 +48,9 @@ class FolderTabFragment :
                     soundManager.pauseSound()
                 } else {
                     currentAudioPlay = audio
-                    soundManager.playSound(audioModel = audio)
+                    soundManager.playSound(audioModel = audio, onCompletion = {
+                        audioAdapter.setIsPlay(false)
+                    })
                 }
             },
             onClickMore = { audio, view ->

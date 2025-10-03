@@ -36,6 +36,11 @@ class SelectAudioAdapter(
         const val ADD_STATE = "ADD_STATE"
     }
 
+    fun setIsPlay(isPlay: Boolean){
+        isPlaying = isPlay
+        notifyItemChanged(currentPlaySelected, PLAY_STATE)
+    }
+
     override fun createViewHolder(binding: ItemSelectAudioBinding): BaseViewHolder<ItemSelectAudioBinding> {
         return BaseViewHolder(binding).apply {
             binding.root.setOnClickListener {

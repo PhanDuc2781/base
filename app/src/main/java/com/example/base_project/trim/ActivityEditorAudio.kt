@@ -152,11 +152,7 @@ class ActivityEditorAudio :
                 mStartText!!.text = getTimeFormat(formatTime(mStartPos))
                 mLastDisplayedStartPos = mStartPos
 
-                /*val formatStartTime = formatTime1(mStartPos)
-                val formatEndTime = formatTime1(mEndPos)
-                mStartSplitSelected?.text = formatStartTime
-                mEndSplitSelected?.text = formatEndTime*/
-                if (type == Type.SPLIT) {
+                if (type == Type.SPLIT || type == Type.MUTE_PART || type == Type.REMOVE_PART) {
                     viewModel.setStart(0)
                 } else {
                     viewModel.setStart(mStartPos)
@@ -228,7 +224,13 @@ class ActivityEditorAudio :
             binding.timeEnd.text = it.duration.formatSecondsToTime()
             audioDuration = it.duration.durationToSecond()
             Log.d("AUDIO_DURATION", "${it.duration}")
+            if (type == Type.REMOVE_PART || type == Type.MUTE_PART) {
+                rangeTrimDurationSelected = it.duration
+                binding.progressRemove.max = it.duration
+                binding.timeEnd.text = it.duration.formatSecondsToTime()
+            }
         }
+
 
         mFilename = audio?.path
         if (mSoundFile == null) loadFromFile() else mHandler?.post { finishOpeningSoundFile() }
@@ -261,8 +263,7 @@ class ActivityEditorAudio :
                     }
 
                     val duration = convertWaveSelected(it.first, it.second)
-                    rangeTrimDurationSelected = (duration * 1000).toInt()
-                    binding.progressCircular.max = (duration * 1000).toInt()
+
                     val formatSelected = formatDuration(duration.toInt())
 
                     Log.d("DURATION_SELECTED", "$duration")
@@ -271,7 +272,12 @@ class ActivityEditorAudio :
                             R.string.selected_time,
                             formatSelected
                         )
-                    binding.timeEnd.text = formatSelected
+
+                    if (type == Type.TRIM) {
+                        rangeTrimDurationSelected = (duration * 1000).toInt()
+                        binding.progressCircular.max = (duration * 1000).toInt()
+                        binding.timeEnd.text = formatSelected
+                    }
 
                     if (type == Type.SPLIT) {
                         binding.layoutPart.txtSelectedPart1.text = formatDuration(duration.toInt())
@@ -297,12 +303,18 @@ class ActivityEditorAudio :
         previewAudio()
     }
 
-    fun startSeekBarProgress(totalDuration: Int, seekBar: SeekBar, timeStartTxt: TextView) {
+    fun startSeekBarProgress(
+        totalDuration: Int,
+        seekBar: SeekBar,
+        timeStartTxt: TextView,
+        startFrom: Int = 0
+    ) {
         val startTime = System.currentTimeMillis()
         var lastSecondMark = 0
+
         job = CoroutineScope(Dispatchers.Main).launch {
             while (isActive) {
-                val elapsed = System.currentTimeMillis() - startTime
+                val elapsed = (System.currentTimeMillis() - startTime) + startFrom
                 seekBar.progress = min(elapsed.toInt(), totalDuration)
 
                 val elapsedSeconds = elapsed
@@ -314,13 +326,8 @@ class ActivityEditorAudio :
                 }
 
                 if (elapsed >= totalDuration) {
-                    if (viewModel.isPlay1.value) {
-                        viewModel.isPlay1.value = false
-                    }
-
-                    if (viewModel.isPlay2.value) {
-                        viewModel.isPlay2.value = false
-                    }
+                    viewModel.isPlay1.value = false
+                    viewModel.isPlay2.value = false
                     break
                 }
                 delay(16)
@@ -405,8 +412,78 @@ class ActivityEditorAudio :
                 }
             }
 
-            Type.REMOVE_PART -> TODO()
-            Type.MUTE_PART -> TODO()
+            Type.REMOVE_PART -> {
+                val endTime: Float = (binding.waveform.pixelsToMillisecs(this.mEndPos)) / 1000.0f
+                val startTime: Float =
+                    (binding.waveform.pixelsToMillisecs(this.mStartPos)) / 1000.0f
+
+
+                DialogSaveFile.show(supportFragmentManager) {
+                    showLoading(true)
+                    Log.d("REMOVE_PARAM", "$mStartPos - $mEndPos")
+                    viewModel.remove(
+                        audio = audio ?: return@show,
+                        fileName = it,
+                        startTime = startTime,
+                        endTime = endTime,
+                        onError = {
+                            showLoading(false)
+                            Log.d("REMOVE_PATH_PROGRESS", "FAIL")
+                        }, onStart = {
+                            showLoading(true)
+                        }, onProgress = {
+
+                        }, onSuccess = {
+                            showLoading(false)
+                            MyFolderActivity.onStart(FolderType.REMOVE_PATH, this)
+                        }
+
+                    )
+                }
+            }
+
+            Type.MUTE_PART -> {
+                if (mEndPos >= 0.0f) {
+                    if (mStartPos == mEndPos) {
+                        Toast.makeText(
+                            this@ActivityEditorAudio,
+                            "Start time = End Time",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return
+                    }
+                    val endTime: Float =
+                        (binding.waveform.pixelsToMillisecs(this.mEndPos)) / 1000.0f
+                    val startTime: Float =
+                        (binding.waveform.pixelsToMillisecs(this.mStartPos)) / 1000.0f
+
+
+                    DialogSaveFile.show(supportFragmentManager) {
+                        showLoading(true)
+                        Log.d("MUTE_PARAM", "$mStartPos - $mEndPos")
+                        viewModel.mute(
+                            audio = audio ?: return@show,
+                            filePath = it,
+                            startTime = startTime,
+                            endTime = endTime,
+                            onFail = {
+                                showLoading(false)
+                                Log.d("MUTE_PROGRESS", "FAIL")
+                            }, onStart = {
+                                showLoading(true)
+                            }, onProgress = {
+
+                            }, onSuccess = {
+                                showLoading(false)
+                                MyFolderActivity.onStart(FolderType.MUTE_PATH, this)
+                            }
+
+                        )
+                    }
+
+                }
+            }
+
             else -> {}
         }
     }
@@ -429,11 +506,25 @@ class ActivityEditorAudio :
                 if (it) {
                     onPlay(mStartPos)
                     Log.d("RANGE_TRIM", "$rangeTrimDurationSelected")
-                    startSeekBarProgress(
-                        rangeTrimDurationSelected,
-                        binding.progressCircular,
-                        binding.timeStart
-                    )
+                    if (type == Type.TRIM) {
+                        binding.progressCircular.show()
+                        binding.progressRemove.hide()
+                        startSeekBarProgress(
+                            rangeTrimDurationSelected,
+                            binding.progressCircular,
+                            binding.timeStart
+                        )
+                    }
+                    if (type == Type.REMOVE_PART || type == Type.MUTE_PART) {
+                        binding.progressRemove.show()
+                        binding.progressCircular.hide()
+                        startSeekBarProgress(
+                            rangeTrimDurationSelected,
+                            binding.progressRemove,
+                            binding.timeStart
+                        )
+                    }
+
                 } else {
                     if (mIsPlaying) {
                         pausePlayer()
@@ -502,6 +593,8 @@ class ActivityEditorAudio :
         when (type) {
             Type.TRIM -> {
                 binding.titleScreen.text = getString(R.string.trim_audio)
+                binding.progressCircular.show()
+                binding.progressRemove.hide()
             }
 
             Type.SPLIT -> {
@@ -518,11 +611,17 @@ class ActivityEditorAudio :
             }
 
             Type.REMOVE_PART -> {
+                binding.progressRemove.show()
+                binding.progressCircular.hide()
                 binding.titleScreen.text = getString(R.string.remove_part)
+                binding.icPlayPreviewCompress.setImageResource(R.drawable.img_remove)
             }
 
             Type.MUTE_PART -> {
+                binding.progressRemove.show()
+                binding.progressCircular.hide()
                 binding.titleScreen.text = getString(R.string.mute_path)
+                binding.icPlayPreviewCompress.setImageResource(R.drawable.img_mute)
             }
 
             else -> {}
@@ -1153,7 +1252,7 @@ class ActivityEditorAudio :
         runOnUiThread {
             if (mIsPlaying) {
 //                binding.icPlay.setImageResource(R.drawable.ic_pause)
-//                binding.baseTextview4.show()
+                binding.baseTextview4.show()
             } else {
                 viewModel.isPlayTrim.value = false
             }
@@ -1256,35 +1355,52 @@ class ActivityEditorAudio :
         }
 
         if (mPlayer == null) {
-            // Not initialized yet
             return
         }
 
         try {
-            mPlayStartMsec = mWaveformView?.pixelsToMillisecs(startPosition) ?: 0
-
-            if (type == Type.SPLIT) {
-                if (startPosition == 0) {
-                    mPlayEndMsec = mWaveformView?.pixelsToMillisecs(mEndPos) ?: 0
-                } else if (startPosition == mEndPos) {
+            // ====== xử lý loại play ======
+            when (type) {
+                Type.MUTE_PART -> {
+                    // luôn play full từ đầu tới cuối
+                    mPlayStartMsec = 0
                     mPlayEndMsec = mWaveformView?.pixelsToMillisecs(mMaxPos) ?: 0
                 }
-            } else {
-                mPlayEndMsec = if (startPosition < mStartPos) {
-                    mWaveformView?.pixelsToMillisecs(mStartPos) ?: 0
-                } else if (startPosition > mEndPos) {
-                    mWaveformView?.pixelsToMillisecs(mMaxPos) ?: 0
-                } else {
-                    mWaveformView?.pixelsToMillisecs(mEndPos) ?: 0
+
+                Type.REMOVE_PART -> {
+                    // play full từ đầu đến cuối, nhưng sẽ bỏ qua đoạn [mStartPos, mEndPos]
+                    mPlayStartMsec = 0
+                    mPlayEndMsec = mWaveformView?.pixelsToMillisecs(mMaxPos) ?: 0
+                }
+
+                Type.SPLIT -> {
+                    mPlayStartMsec = mWaveformView?.pixelsToMillisecs(startPosition) ?: 0
+                    if (startPosition == 0) {
+                        mPlayEndMsec = mWaveformView?.pixelsToMillisecs(mEndPos) ?: 0
+                    } else if (startPosition == mEndPos) {
+                        mPlayEndMsec = mWaveformView?.pixelsToMillisecs(mMaxPos) ?: 0
+                    }
+                }
+
+                else -> {
+                    mPlayStartMsec = mWaveformView?.pixelsToMillisecs(startPosition) ?: 0
+                    mPlayEndMsec = if (startPosition < mStartPos) {
+                        mWaveformView?.pixelsToMillisecs(mStartPos) ?: 0
+                    } else if (startPosition > mEndPos) {
+                        mWaveformView?.pixelsToMillisecs(mMaxPos) ?: 0
+                    } else {
+                        mWaveformView?.pixelsToMillisecs(mEndPos) ?: 0
+                    }
                 }
             }
 
-
+            // ====== chuẩn bị media ======
             mPlayStartOffset = 0
             val startFrame = mWaveformView?.secondsToFrames(mPlayStartMsec * 0.001)
             val endFrame = mWaveformView?.secondsToFrames(mPlayEndMsec * 0.001)
             val startByte = mSoundFile!!.getSeekableFrameOffset(startFrame ?: 0)
             val endByte = mSoundFile!!.getSeekableFrameOffset(endFrame ?: 0)
+
             if (startByte >= 0 && endByte >= 0) {
                 mPlayStartOffset = try {
                     mPlayer!!.reset()
@@ -1301,9 +1417,9 @@ class ActivityEditorAudio :
                     mPlayer!!.prepare()
                     0
                 }
-
             }
 
+            // ====== listener hoàn tất ======
             mPlayer!!.setOnCompletionListener { handlePause() }
             mIsPlaying = true
             if (mPlayStartOffset == 0) {
@@ -1317,9 +1433,61 @@ class ActivityEditorAudio :
             }
             updateDisplay()
             enableDisableButtons()
-        } catch (e: Exception) {
-        }
 
+            if (type == Type.MUTE_PART) {
+                val muteStart = mWaveformView?.pixelsToMillisecs(mStartPos) ?: 0
+                val muteEnd = mWaveformView?.pixelsToMillisecs(mEndPos) ?: 0
+
+                val handler = Handler()
+                val muteCheck = object : Runnable {
+                    override fun run() {
+                        val pos = mPlayer?.currentPosition ?: 0
+                        if (pos in muteStart..muteEnd) {
+                            mPlayer?.setVolume(0f, 0f)
+                        } else {
+                            mPlayer?.setVolume(1f, 1f)
+                        }
+                        if (mIsPlaying) handler.postDelayed(this, 100)
+                    }
+                }
+                handler.post(muteCheck)
+            }
+
+            if (type == Type.REMOVE_PART) {
+                val removeStart = mWaveformView?.pixelsToMillisecs(mStartPos) ?: 0
+                val removeEnd = mWaveformView?.pixelsToMillisecs(mEndPos) ?: 0
+                Log.d("removeEnd" , "$removeEnd")
+
+                mPlayer?.setOnSeekCompleteListener {
+                    mPlayer?.start()
+                }
+
+                val handler = Handler()
+                val removeCheck = object : Runnable {
+                    override fun run() {
+                        val pos = mPlayer?.currentPosition ?: 0
+                        if (pos in removeStart..removeEnd) {
+                            // nhảy thẳng đến sau đoạn remove
+                            mPlayer?.seekTo(removeEnd)
+                            job?.cancel()
+                            binding.progressRemove.progress = removeEnd
+                            val duration = mPlayer?.duration ?: 0
+                            startSeekBarProgress(
+                                totalDuration = duration,
+                                seekBar = binding.progressRemove,
+                                timeStartTxt = binding.timeStart,
+                                startFrom = removeEnd
+                            )
+                        }
+                        if (mIsPlaying) handler.postDelayed(this, 100)
+                    }
+                }
+                handler.post(removeCheck)
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 

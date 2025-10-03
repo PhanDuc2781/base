@@ -2,8 +2,10 @@ package com.example.base_project.trim
 
 import androidx.lifecycle.viewModelScope
 import com.example.base_project.base.BaseViewModel
+import com.example.base_project.mute.MutePresenter
 import com.example.base_project.select.bean.Audio
 import com.example.base_project.split.SplitPresenter
+import com.example.base_project.trim.presenter.RemovePresenter
 import com.example.base_project.trim.presenter.TrimPresenter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +16,8 @@ import javax.inject.Inject
 class TrimViewmodel @Inject constructor(
     private val trimPresenter: TrimPresenter,
     private val splitPresenter: SplitPresenter,
+    private val mutePresenter: MutePresenter,
+    private val removePresenter: RemovePresenter,
 ) : BaseViewModel() {
 
     val selectedStart = MutableStateFlow(-1)
@@ -30,6 +34,50 @@ class TrimViewmodel @Inject constructor(
 
     fun setEnd(end: Int) {
         selectedEnd.value = end
+    }
+
+    fun remove(
+        audio: Audio,
+        fileName: String,
+        endTime: Float,
+        startTime: Float,
+        onError: (String) -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onStart: () -> Unit = {},
+        onProgress: (Int) -> Unit = {},
+    ) = viewModelScope.launch {
+        removePresenter.remove(
+            audio,
+            fileName,
+            endTime,
+            startTime,
+            onError,
+            onSuccess,
+            onStart,
+            onProgress
+        )
+    }
+
+    fun mute(
+        audio: Audio,
+        filePath: String,
+        startTime: Float,
+        endTime: Float,
+        onStart: () -> Unit,
+        onFail: (String) -> Unit,
+        onSuccess: () -> Unit,
+        onProgress: (Int) -> Unit,
+    ) = viewModelScope.launch {
+        mutePresenter.mute(
+            audio,
+            filePath,
+            startTime,
+            endTime,
+            onStart,
+            onFail,
+            onSuccess,
+            onProgress
+        )
     }
 
     fun split(

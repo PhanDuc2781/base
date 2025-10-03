@@ -70,7 +70,9 @@ class SelectAudioActivity :
                 if (!isPlay) {
                     soundManager.pauseSound()
                 } else {
-                    soundManager.playSound(audioModel = audio)
+                    soundManager.playSound(audioModel = audio, onCompletion = {
+                        viewModel.setCompeleted(true)
+                    })
                 }
             },
             onClickAdd = { audio ->
@@ -239,6 +241,14 @@ class SelectAudioActivity :
                 }
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.isCompeleted.collect {
+                if (it){
+                    selectAudioAdapter.setIsPlay(false)
+                }
+            }
+        }
     }
 
     private fun handleViewEmpty(data: List<Audio>) {
@@ -332,6 +342,12 @@ class SelectDataViewModel @Inject constructor() : BaseViewModel() {
     val isSearching = MutableStateFlow(false)
 
     private var currentJob: Job? = null
+
+    val isCompeleted = MutableStateFlow(false)
+
+    fun setCompeleted(isCompelete: Boolean) {
+        isCompeleted.value = isCompelete
+    }
 
     fun getMp3AudioList() {
         currentJob?.cancel()
